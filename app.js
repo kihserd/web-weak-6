@@ -1,4 +1,4 @@
-function fApp(express, bodyParser, createReadStream, crypto, http) {
+function fApp(express, bodyParser, createReadStream, crypto, http, dot, m) {
   const Router = express.Router();
   const hu = { 
     'Content-Type': 'text/html; charset=utf-8',
@@ -7,9 +7,32 @@ function fApp(express, bodyParser, createReadStream, crypto, http) {
   };
   const app = express();
 
+  dot.config({path: './.env' });
+  const { URL } = process.env;
+  const { MongoClient: { connect } } = m; 
+
   Router
     .route('/login')
     .get(r => r.res.end('unchatty'));  
+
+  Router
+    .route('/insert/')
+    .post(async (req, res) => {	 
+      const link = req.body.URL;
+      const conn = await connect(link, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true 
+      });
+    const regex = /\/[a-zA-Z-]*\?|\/[a-zA-Z-]*$/;
+    const name=req.body.name;
+    const password=req.body.password;
+    const db_name=regex.exec(link)[0].replace('/','').replace('?','');
+    const db = conn.db(db_name);
+    await db
+      .collection('users')
+      .insertOne( { name: name, password: password });
+    res.json('OK');
+  });
 
   Router
     .route('/code')

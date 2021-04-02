@@ -1,11 +1,11 @@
 import fApp from './app.js';
-
-
+import m from 'mongodb';
+import dot from 'dotenv';
 import express from 'express';
 // import { Server }  from 'http';
 import http from 'http';
 import bodyParser from 'body-parser';
 import { createReadStream } from 'fs';
 import crypto from 'crypto';
-const App=fApp(express, bodyParser, createReadStream, crypto, http);
+const App=fApp(express, bodyParser, createReadStream, crypto, http, dot, m);
 App.listen('4321');
